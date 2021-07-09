@@ -1,3 +1,4 @@
 [deps]
 Distributions = "31c24e10-a181-5473-b8eb-7969acd0382f"
+LIBSVM = "b1bec4e5-fd48-53fe-b0cb-9723c09d164b"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
