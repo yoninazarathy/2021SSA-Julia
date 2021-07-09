@@ -1,8 +1,16 @@
+# cd(@__DIR__) #I assume my environment is in the folder where the file is
+# using Pkg
+# Pkg.activate(".")
+
 ########################################################
 ## This is a merged cell of all of the Simulation code #
 ########################################################
 
-using Distributions, Plots
+using Distributions#, Plots
+
+# module MySim
+
+println("Preparing the simulation file")
 
 """
 Returns an array of points around the point (i,j) to which we can move.
@@ -86,38 +94,38 @@ init_agents() = [ Agent(rand(1:M),
                         id) for id in 1:n]
 
 
-δ = 0.1;
-noise() = rand(Uniform(-0.1,0.1))
+# δ = 0.1;
+# noise() = rand(Uniform(-0.1,0.1))
 
-function illustrate_agents(agents::Vector{Agent}; title = "")
-    #plot black background
-    plot(Shape([1-2δ,N+2δ,N+2δ,1-2δ],[1-2δ,1-2δ,M+2δ,M+2δ]),c=:black,label=:none)
+# function illustrate_agents(agents::Vector{Agent}; title = "")
+#     #plot black background
+#     plot(Shape([1-2δ,N+2δ,N+2δ,1-2δ],[1-2δ,1-2δ,M+2δ,M+2δ]),c=:black,label=:none)
 
-    s_agents = filter((a)->a.state == :S,agents)
-    x = [a.horz_loc + noise() for a in s_agents]
-    y = [a.vert_loc + noise() for a in s_agents]
-    scatter!(x, y, 
-        c = :green,
-        label="Susceptible")
+#     s_agents = filter((a)->a.state == :S,agents)
+#     x = [a.horz_loc + noise() for a in s_agents]
+#     y = [a.vert_loc + noise() for a in s_agents]
+#     scatter!(x, y, 
+#         c = :green,
+#         label="Susceptible")
     
-    r_agents = filter((a)->a.state == :R, agents)
-    x = [a.horz_loc + noise() for a in r_agents]
-    y = [a.vert_loc + noise() for a in r_agents]
-    scatter!(x, y, 
-        c = :yellow,
-        label="Removed")
+#     r_agents = filter((a)->a.state == :R, agents)
+#     x = [a.horz_loc + noise() for a in r_agents]
+#     y = [a.vert_loc + noise() for a in r_agents]
+#     scatter!(x, y, 
+#         c = :yellow,
+#         label="Removed")
 
-    i_agents = filter((a)->a.state == :I,agents)
-    x = [a.horz_loc + noise() for a in i_agents]
-    y = [a.vert_loc + noise() for a in i_agents]
-    scatter!(x, y, 
-        xlim = (0,N+1), ylim = (0,M+1),
-        c = :red,
-        #framestyle=:none,
-        label="Infected",
-        legend = :outertopright,
-        aspectratio = 1,title = title) 
-end
+#     i_agents = filter((a)->a.state == :I,agents)
+#     x = [a.horz_loc + noise() for a in i_agents]
+#     y = [a.vert_loc + noise() for a in i_agents]
+#     scatter!(x, y, 
+#         xlim = (0,N+1), ylim = (0,M+1),
+#         c = :red,
+#         #framestyle=:none,
+#         label="Infected",
+#         legend = :outertopright,
+#         aspectratio = 1,title = title) 
+# end
 
 # Query functions for the aggregate of the epidemic
 numS(agents) = count((a)->a.state == :S, agents)
@@ -198,41 +206,44 @@ function run_sim(call_back=(t,a)->nothing ; Tmax = 300) #(t,agents)->nothing is 
 end
 
 
-"""
-Plot 3 simulation runs.
-"""
-function plot_3_runs()
-    results1 = run_sim()
-    results2 = run_sim()
-    results3 = run_sim()
+# """
+# Plot 3 simulation runs.
+# """
+# function plot_3_runs()
+#     results1 = run_sim()
+#     results2 = run_sim()
+#     results3 = run_sim()
 
-    plot(results1.time_range, 
-        [results1.counts_S results1.counts_I results1.counts_R],
-        label = false, 
-        c = [:green :red :yellow],lw=3)
-    plot!(results2.time_range, 
-        [results2.counts_S results2.counts_I results2.counts_R],
-        label = false, 
-        c = [:green :red :yellow],lw=3)
-    plot!(results3.time_range, 
-        [results3.counts_S results3.counts_I results3.counts_R],
-        label = ["Susceptible" "Infected" "Removed"], 
-        c = [:green :red :yellow],
-        ylim=(0,n),xlabel="Time", ylabel = "Individuals",
-        legend=:outertopright,lw=3)
-end
+#     plot(results1.time_range, 
+#         [results1.counts_S results1.counts_I results1.counts_R],
+#         label = false, 
+#         c = [:green :red :yellow],lw=3)
+#     plot!(results2.time_range, 
+#         [results2.counts_S results2.counts_I results2.counts_R],
+#         label = false, 
+#         c = [:green :red :yellow],lw=3)
+#     plot!(results3.time_range, 
+#         [results3.counts_S results3.counts_I results3.counts_R],
+#         label = ["Susceptible" "Infected" "Removed"], 
+#         c = [:green :red :yellow],
+#         ylim=(0,n),xlabel="Time", ylabel = "Individuals",
+#         legend=:outertopright,lw=3)
+# end
 
 
-function make_animation(;filename = "epidemic-animation.gif", Tanim = 200)
-    anim = Animation()
+# function make_animation(;filename = "epidemic-animation.gif", Tanim = 200)
+#     anim = Animation()
     
-    function plotting_call_back(t,agents)
-        if t <= Tanim
-            illustrate_agents(agents,title = "Time = $t, Infected = $(numI(agents))")
-            frame(anim)
-        end 
-    end
+#     function plotting_call_back(t,agents)
+#         if t <= Tanim
+#             illustrate_agents(agents,title = "Time = $t, Infected = $(numI(agents))")
+#             frame(anim)
+#         end 
+#     end
     
-    run_sim(plotting_call_back)
-    gif(anim, filename, fps = 5) #5 frames per second
-end;
+#     run_sim(plotting_call_back)
+#     gif(anim, filename, fps = 5) #5 frames per second
+# end;
+
+
+# end; #end Module
